@@ -18,7 +18,6 @@ ehthumbs.db
 Thumbs.db
 
 # Editor directories and files
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -34,3 +33,11 @@ Thumbs.db
 
 # Extension development
 web-ext-artifacts/
+
+# Personal files (uncomment if needed)
+# *.docx
+# *.pdf
+# *.png
+# *.jpg
+# *.jpeg
+# *.mp4
