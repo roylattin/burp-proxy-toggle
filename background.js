@@ -133,26 +133,93 @@ async function disableBurpProxy() {
     }
 }
 
+// Security function to validate messages
+function validateMessage(request, sender) {
+    // Validate sender is from extension popup
+    if (!sender || sender.id !== chrome.runtime.id) {
+        console.warn('Message from unauthorized sender:', sender);
+        return false;
+    }
+    
+    // Validate message structure
+    if (!request || typeof request.action !== 'string') {
+        console.warn('Invalid message structure:', request);
+        return false;
+    }
+    
+    // Validate allowed actions
+    const allowedActions = ['enableProxy', 'disableProxy', 'updateIcon'];
+    if (!allowedActions.includes(request.action)) {
+        console.warn('Unauthorized action attempted:', request.action);
+        return false;
+    }
+    
+    return true;
+}
+
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // Security validation
+    if (!validateMessage(request, sender)) {
+        sendResponse({ success: false, error: 'Unauthorized request' });
+        return false;
+    }
+    
     if (request.action === 'enableProxy') {
         enableBurpProxy().then(() => {
             sendResponse({ success: true });
         }).catch((error) => {
-            sendResponse({ success: false, error: error.message });
+            console.error('Proxy enable error:', error.message);
+            sendResponse({ success: false, error: 'Failed to enable proxy' });
         });
         return true; // Indicates we'll send a response asynchronously
     } else if (request.action === 'disableProxy') {
         disableBurpProxy().then(() => {
             sendResponse({ success: true });
         }).catch((error) => {
-            sendResponse({ success: false, error: error.message });
+            console.error('Proxy disable error:', error.message);
+            sendResponse({ success: false, error: 'Failed to disable proxy' });
         });
         return true;
     } else if (request.action === 'updateIcon') {
+        // Validate isEnabled parameter
+        if (typeof request.isEnabled !== 'boolean') {
+            sendResponse({ success: false, error: 'Invalid parameter' });
+            return false;
+        }
         updateIcon(request.isEnabled);
         sendResponse({ success: true });
         return true;
+    }
+    
+    // Should never reach here due to validation
+    sendResponse({ success: false, error: 'Unknown action' });
+    return false;
+});
+
+// Listen for keyboard commands
+chrome.commands.onCommand.addListener(async (command) => {
+    if (command === 'toggle-proxy') {
+        try {
+            // Get current proxy state
+            const result = await chrome.storage.local.get(['proxyEnabled']);
+            const currentState = result.proxyEnabled || false;
+            const newState = !currentState;
+            
+            // Toggle proxy
+            if (newState) {
+                await enableBurpProxy();
+            } else {
+                await disableBurpProxy();
+            }
+            
+            // Save new state
+            await chrome.storage.local.set({ proxyEnabled: newState });
+            
+            console.log(`Proxy toggled via keyboard shortcut: ${newState ? 'enabled' : 'disabled'}`);
+        } catch (error) {
+            console.error('Error toggling proxy via keyboard shortcut:', error);
+        }
     }
 });
 

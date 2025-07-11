@@ -1,8 +1,24 @@
-// Burp Proxy configuration
+// Burp Proxy configuration with validation
 const BURP_PROXY_CONFIG = {
     host: "127.0.0.1",
     port: 8080
 };
+
+// Validate proxy configuration
+function validateProxyConfig(config) {
+    // Validate host (only allow localhost/127.0.0.1 for security)
+    const allowedHosts = ['127.0.0.1', 'localhost'];
+    if (!allowedHosts.includes(config.host)) {
+        throw new Error('Invalid proxy host');
+    }
+    
+    // Validate port range (1024-65535 for non-privileged ports)
+    if (config.port < 1024 || config.port > 65535) {
+        throw new Error('Invalid proxy port range');
+    }
+    
+    return true;
+}
 
 // Initialize popup when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -34,6 +50,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function toggleProxy(enable) {
         try {
+            // Validate proxy configuration before use
+            validateProxyConfig(BURP_PROXY_CONFIG);
+            
             if (enable) {
                 // Enable Burp proxy
                 const proxyConfig = {
@@ -74,9 +93,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             
         } catch (error) {
             console.error('Error toggling proxy:', error);
-            // Show error to user
-            statusText.textContent = 'Error: ' + error.message;
+            // Show user-friendly error message (no sensitive info)
+            let userMessage = 'Unable to toggle proxy. ';
+            
+            if (error.message.includes('permission')) {
+                userMessage += 'Check extension permissions.';
+            } else if (error.message.includes('network')) {
+                userMessage += 'Check network connection.';
+            } else {
+                userMessage += 'Please try again.';
+            }
+            
+            statusText.textContent = userMessage;
             statusText.className = 'status error';
+            
+            // Reset toggle to previous state on error
+            toggle.checked = !enable;
         }
     }
 

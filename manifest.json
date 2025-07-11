@@ -1,8 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Burp Proxy Toggle",
-  "version": "1.0.0",
-  "description": "Simple toggle to enable/disable Burp Suite proxy in Microsoft Edge",
+  "version": "1.0.1",
+  "description": "One-click toggle to enable/disable Burp Suite proxy for security testing. Simple, fast, and secure proxy management for penetration testers and security researchers.",
+  "author": "Your Name",
+  "homepage_url": "https://github.com/roylattin/burp-proxy-toggle",
   "permissions": [
     "proxy",
     "storage",
@@ -15,7 +17,18 @@
   "background": {
     "service_worker": "background.js"
   },
-  "host_permissions": [
-    "*://*/*"
-  ]
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' 'unsafe-inline'"
+  },
+  "commands": {
+    "toggle-proxy": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "Toggle Burp proxy on/off"
+    }
+  },
+  "minimum_chrome_version": "88",
+  "short_name": "Burp Toggle"
 }
