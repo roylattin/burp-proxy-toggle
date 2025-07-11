@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Burp Proxy Toggle",
+  "version": "1.0.0",
+  "description": "Simple toggle to enable/disable Burp Suite proxy in Microsoft Edge",
+  "permissions": [
+    "proxy",
+    "storage",
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Toggle Burp Proxy"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "*://*/*"
+  ]
+}

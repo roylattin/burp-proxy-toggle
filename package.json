@@ -1,0 +1,22 @@
+{
+  "name": "burp-proxy-toggle",
+  "version": "1.0.0",
+  "description": "Microsoft Edge extension to toggle Burp Suite proxy settings",
+  "scripts": {
+    "build": "echo 'No build process needed for this extension'",
+    "package": "echo 'To package: Go to edge://extensions, enable Developer mode, and click Load unpacked'",
+    "test": "echo 'Test by loading the extension in Edge Developer mode'"
+  },
+  "keywords": [
+    "browser-extension",
+    "edge",
+    "burp-suite",
+    "proxy",
+    "security-testing"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "web-ext": "^7.0.0"
+  }
+}
