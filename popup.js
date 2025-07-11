@@ -66,6 +66,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Save state to storage
             await chrome.storage.local.set({ proxyEnabled: enable });
             
+            // Update icon via background script
+            chrome.runtime.sendMessage({
+                action: 'updateIcon',
+                isEnabled: enable
+            });
+            
         } catch (error) {
             console.error('Error toggling proxy:', error);
             // Show error to user
